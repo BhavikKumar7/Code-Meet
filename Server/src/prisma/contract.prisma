@@ -1,0 +1,96 @@
+// use prisma-next
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  username     String   @unique
+  name         String?
+  passwordHash String
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  createdBy   Int
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}
+
+model ProjectMember {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  userId    Int
+  role      String   @default("MEMBER")
+  createdAt TimestamptzString @default(now())
+
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@index([projectId])
+}
+
+model ProjectInvitation {
+  id          Int      @id @default(autoincrement())
+  projectId   Int
+  inviterId   Int
+  inviteeId   Int
+  status      String   @default("PENDING")
+  createdAt   TimestamptzString @default(now())
+  respondedAt TimestamptzString?
+
+  @@index([inviteeId, status])
+  @@index([projectId, inviteeId])
+}
+
+model ProjectFile {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  name      String
+  path      String
+  language  String?
+  content   String   @default("")
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  projectId Int
+  userId    Int
+  message   String
+  createdAt TimestamptzString @default(now())
+}
+
+model InterviewSession {
+  id                 Int      @id @default(autoincrement())
+  projectId          Int
+  interviewerId      Int
+  candidateId        Int
+  problemTitle       String
+  problemDescription String
+  durationMinutes    Int      @default(30)
+  status             String   @default("WAITING")
+  createdAt          TimestamptzString @default(now())
+}
+
+model InterviewEvaluation {
+  id             Int      @id @default(autoincrement())
+  interviewId    Int
+  problemSolving Int
+  codeQuality    Int
+  communication  Int
+  feedback       String?
+  createdAt      TimestamptzString @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  type      String   @default("INFO")
+  isRead    Boolean  @default(false)
+  createdAt TimestamptzString @default(now())
+}
